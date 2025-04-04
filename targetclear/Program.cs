@@ -20,8 +20,10 @@ Task 16.2
 */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -231,6 +233,48 @@ namespace targetclear
             Console.WriteLine();
         }
 
+        static List<String> ConvertToRPNWithBrackets(string input)
+        {
+            List<string> tokens = new List<string>();
+            int temp = 0;
+            for (int i = 0; i < input.Length; i++)
+            {
+                Console.WriteLine(input[i]);
+                if (Char.IsDigit(input[i]))
+                {
+                    temp *= 10;
+                    temp += int.Parse(input[i].ToString());
+                }
+                else if (input[i] == 42 || input[i] == 43 || input[i] == 46 || input[i] == 47 || input[i] == 40 || input[i] == 41)
+                {
+                    if (temp != 0)
+                    {
+                        tokens.Add(temp.ToString());
+                        temp = 0;
+                    }
+                    tokens.Add(input[i].ToString());
+                }
+                if (i == input.Length - 1)
+                    tokens.Add(temp.ToString());
+            }
+            Console.WriteLine($"[ {string.Join(", ", tokens)} ]");
+
+            Dictionary<string, int> Precedence = new Dictionary<string, int>
+        {
+            { "+", 2 }, { "-", 2 }, { "*", 4 }, { "/", 4 }
+        };
+            List<string> UserInputInRPN = new List<string> { };
+            Queue<string> q = new Queue<string>();
+            Stack<string> s = new Stack<string>();
+
+            for (int i = 0; i < tokens.Count; i++)
+            {
+                if (int.TryParse(tokens[i], out _)) q.Enqueue(tokens[i]);
+                else if (tokens[i] == "+" || tokens[i] == "*" || tokens[i] == "-" || tokens[i] == "/")
+        }
+
+            return UserInputInRPN;
+        }
         static List<string> ConvertToRPN(string UserInput)
         {
             int Position = 0;
