@@ -77,7 +77,9 @@ namespace targetclear
                 Console.WriteLine();
                 if (CheckIfUserInputValid(UserInput))
                 {
-                    UserInputInRPN = ConvertToRPN(UserInput);
+                    UserInputInRPN = ConvertToRPNWithBrackets(UserInput);
+                    Console.WriteLine($"[ {string.Join(", ", UserInputInRPN)} ]");
+
                     if (CheckNumbersUsedAreAllInNumbersAllowed(NumbersAllowed, UserInputInRPN, MaxNumber))
                     {
                         if (CheckIfUserInputEvaluationIsATarget(Targets, UserInputInRPN, ref Score))
@@ -122,7 +124,7 @@ namespace targetclear
 
         static void RemoveNumbersUsed(string UserInput, int MaxNumber, List<int> NumbersAllowed)
         {
-            List<string> UserInputInRPN = ConvertToRPN(UserInput);
+            List<string> UserInputInRPN = ConvertToRPNWithBrackets(UserInput);
             foreach (string Item in UserInputInRPN)
             {
                 if (CheckValidNumber(Item, MaxNumber))
@@ -233,7 +235,7 @@ namespace targetclear
             Console.WriteLine();
         }
 
-        static List<String> ConvertToRPNWithBrackets(string input)
+        static List<string> ConvertToRPNWithBrackets(string input)
         {
             List<string> tokens = new List<string>();
             int temp = 0;
@@ -256,21 +258,26 @@ namespace targetclear
                 else if (i == input.Length - 1)
                     tokens.Add(temp.ToString());
             }
-            Console.WriteLine($"[ {string.Join(", ", tokens)} ]");
+            string pretty = $"[ {string.Join(", ", tokens)} ]";
 
             Dictionary<string, int> preced = new Dictionary<string, int>
-        {
-            { "+", 2 }, { "-", 2 }, { "*", 4 }, { "/", 4 }
-        };
+            {
+                { "+", 2 }, { "-", 2 }, { "*", 4 }, { "/", 4 }
+            };
             List<string> q = new List<string> { };
             Stack<string> s = new Stack<string>();
-
             for (int i = 0; i < tokens.Count; i++)
             {
+                Console.WriteLine(tokens.Count);
+                Console.WriteLine($"i = {i}");
+                Console.WriteLine($"{pretty} \n");
+
+                Console.Write("Queue: ");
                 foreach (var item in q) Console.Write($"{item} ");
                 Console.WriteLine();
+                Console.Write("Stack: ");
                 foreach (var item in s) Console.Write($"{item} ");
-                Console.WriteLine();
+                Console.WriteLine("\n");
 
                 if (int.TryParse(tokens[i], out _))
                 {
@@ -288,7 +295,6 @@ namespace targetclear
                             s.Push(tokens[i]);
                             break;
                         }
-                        Console.WriteLine($"top of s = {s.Peek()}");
                         if (preced[s.Peek()] > 2)
                         {
                             Console.WriteLine($"{tokens[i]} has lower precedence than {s.Peek()} so popping and adding {s.Peek()} to the queue");
@@ -300,25 +306,32 @@ namespace targetclear
                         break;
                     }
                 }
-                else if (tokens[i] == "(") s.Push(tokens[i]);
+                else if (tokens[i] == "(")
+                {
+                    Console.WriteLine($"pushing {tokens[i]} onto the stack");
+                    s.Push(tokens[i]);
+
+                }
                 else if (tokens[i] == ")")
                 {
                     while (true)
                     {
+                        if (s.Count == 0)
+                        {
+                            break;
+                        }
                         if (s.Peek() == "(")
                         {
                             s.Pop();
                             break;
                         }
+                        Console.WriteLine($"{s.Peek()} is an opernand so enqueueing");
                         q.Add(s.Pop());
                     }
                 }
                 Console.ReadLine();
                 Console.Clear();
             }
-
-
-
             return q;
         }
         static List<string> ConvertToRPN(string UserInput)
