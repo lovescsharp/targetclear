@@ -1,7 +1,23 @@
-﻿//Skeleton Program code for the AQA A Level Paper 1 Summer 2025 examination
-//this code should be used in conjunction with the Preliminary Material
-//written by the AQA Programmer Team
-//developed in the Visual Studio Community Edition programming environment
+﻿/*Task 16
+    This question extends the mathematical range of the Skeleton Program by introducing parentheses. 
+    Add functionality to the game to allow users to input infix notation using brackets in their expressions to 
+    control the order of operations.
+    You can assume that the user will enter a valid number of brackets in their expression. 
+What you need to do
+Task 16.1
+    Create a new method ConvertToRPNWithBrackets to replace the ConvertToRPN method. Use a 
+    shunting algorithm to correctly interpret the precedence of an expression which includes brackets. 
+    Update the application to replace wherever the ConvertToRPN method is called. 
+    Modify the CheckValidOperator and CheckIfUserInputValid methods to update the Regular 
+    Expressions to match with a suitable pattern to allow brackets in an infix expression.
+Task 16.2
+    Test that the changes you have made work:
+    ● Run the Skeleton Program.
+    ● Enter y to start a training game.
+    ● Enter the expression: (8+2)*2+3
+    ● Show the program displaying an updated Targets list with 23 correctly removed:
+    | | | | |9|140|82|121|34|45|68|75|34| |119|43| |119|119|119|
+*/
 
 using System;
 using System.Collections.Generic;
