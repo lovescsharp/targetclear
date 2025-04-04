@@ -239,13 +239,12 @@ namespace targetclear
             int temp = 0;
             for (int i = 0; i < input.Length; i++)
             {
-                Console.WriteLine(input[i]);
                 if (Char.IsDigit(input[i]))
                 {
                     temp *= 10;
                     temp += int.Parse(input[i].ToString());
                 }
-                else if (input[i] == 42 || input[i] == 43 || input[i] == 46 || input[i] == 47 || input[i] == 40 || input[i] == 41)
+                else if (input[i] == 42 || input[i] == 43 || input[i] == 45 || input[i] == 47 || input[i] == 40 || input[i] == 41)
                 {
                     if (temp != 0)
                     {
@@ -254,26 +253,73 @@ namespace targetclear
                     }
                     tokens.Add(input[i].ToString());
                 }
-                if (i == input.Length - 1)
+                else if (i == input.Length - 1)
                     tokens.Add(temp.ToString());
             }
             Console.WriteLine($"[ {string.Join(", ", tokens)} ]");
 
-            Dictionary<string, int> Precedence = new Dictionary<string, int>
+            Dictionary<string, int> preced = new Dictionary<string, int>
         {
             { "+", 2 }, { "-", 2 }, { "*", 4 }, { "/", 4 }
         };
-            List<string> UserInputInRPN = new List<string> { };
-            Queue<string> q = new Queue<string>();
+            List<string> q = new List<string> { };
             Stack<string> s = new Stack<string>();
 
             for (int i = 0; i < tokens.Count; i++)
             {
-                if (int.TryParse(tokens[i], out _)) q.Enqueue(tokens[i]);
-                else if (tokens[i] == "+" || tokens[i] == "*" || tokens[i] == "-" || tokens[i] == "/")
-        }
+                foreach (var item in q) Console.Write($"{item} ");
+                Console.WriteLine();
+                foreach (var item in s) Console.Write($"{item} ");
+                Console.WriteLine();
 
-            return UserInputInRPN;
+                if (int.TryParse(tokens[i], out _))
+                {
+                    Console.WriteLine($"{tokens[i]} is a number so queueing it");
+                    q.Add(tokens[i]);
+                }
+                else if (tokens[i] == "+" || tokens[i] == "*" || tokens[i] == "-" || tokens[i] == "/")
+                {
+                    Console.WriteLine($"{tokens[i]} is an operator");
+                    while (true)
+                    {
+                        if (s.Count == 0 || s.Peek() == "(")
+                        {
+                            Console.WriteLine($"Finally pushing {tokens[i]} to the stack");
+                            s.Push(tokens[i]);
+                            break;
+                        }
+                        Console.WriteLine($"top of s = {s.Peek()}");
+                        if (preced[s.Peek()] > 2)
+                        {
+                            Console.WriteLine($"{tokens[i]} has lower precedence than {s.Peek()} so popping and adding {s.Peek()} to the queue");
+                            q.Add(s.Pop());
+                            continue;
+                        }
+                        Console.WriteLine($"Finally pushing {tokens[i]} to the stack");
+                        s.Push(tokens[i]);
+                        break;
+                    }
+                }
+                else if (tokens[i] == "(") s.Push(tokens[i]);
+                else if (tokens[i] == ")")
+                {
+                    while (true)
+                    {
+                        if (s.Peek() == "(")
+                        {
+                            s.Pop();
+                            break;
+                        }
+                        q.Add(s.Pop());
+                    }
+                }
+                Console.ReadLine();
+                Console.Clear();
+            }
+
+
+
+            return q;
         }
         static List<string> ConvertToRPN(string UserInput)
         {
